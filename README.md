@@ -1,12 +1,27 @@
 docker-gen
 =====
 
-![latest 0.7.4](https://img.shields.io/badge/latest-0.7.4-green.svg?style=flat)
+![latest 0.7.5](https://img.shields.io/badge/latest-0.7.5-blue.svg?style=flat)
+![Go](https://github.com/Jeremie-C/my-docker-gen/workflows/Go/badge.svg?branch=master)
 [![Build Status](https://travis-ci.org/Jeremie-C/my-docker-gen.svg?branch=master)](https://travis-ci.org/Jeremie-C/my-docker-gen)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
+#### Host Install
 
-### Original readme from jwilder
+Linux/OSX binaries for release [0.7.5](https://github.com/Jeremie-C/my-docker-gen/releases)
+
+#### Separate Container Install
+
+It can also be run as two separate containers using the [jeremiec82/my-nginx-gen](https://hub.docker.com/repository/docker/jeremiec82/my-nginx-gen)
+image, together with virtually any other image.
+
+This is how you could run the official [nginx](https://registry.hub.docker.com/_/nginx/) image and
+have docker-gen generate a reverse proxy config in the same way that `nginx-proxy` works. You may want to do
+this to prevent having the docker socket bound to a publicly exposed container service.
+
+More information on [my-nginx-gen](https://github.com/Jeremie-C/my-nginx-gen) repository.
+
+## Original readme from jwilder
 
 `docker-gen` is a file generator that renders templates using docker container meta-data.
 
@@ -28,12 +43,6 @@ There are three common ways to run docker-gen:
 
 #### Host Install
 
-Linux/OSX binaries for release [0.7.4](https://github.com/jwilder/docker-gen/releases)
-
-* [amd64](https://github.com/jwilder/docker-gen/releases/download/0.7.4/docker-gen-linux-amd64-0.7.4.tar.gz)
-* [i386](https://github.com/jwilder/docker-gen/releases/download/0.7.4/docker-gen-linux-i386-0.7.4.tar.gz)
-* [alpine-linux](https://github.com/jwilder/docker-gen/releases/download/0.7.4/docker-gen-alpine-linux-amd64-0.7.4.tar.gz)
-
 Download the version you need, untar, and install to your PATH.
 
 ```
@@ -50,31 +59,6 @@ Docker-gen can be bundled inside of a container along-side applications.
 running docker-gen within a container along-side nginx.
 [jwilder/docker-register](https://github.com/jwilder/docker-register) is an example of running
 docker-gen within a container to do service registration with etcd.
-
-#### Separate Container Install
-
-It can also be run as two separate containers using the [jwilder/docker-gen](https://index.docker.io/u/jwilder/docker-gen/)
-image, together with virtually any other image.
-
-This is how you could run the official [nginx](https://registry.hub.docker.com/_/nginx/) image and
-have docker-gen generate a reverse proxy config in the same way that `nginx-proxy` works. You may want to do
-this to prevent having the docker socket bound to a publicly exposed container service.
-
-Start nginx with a shared volume:
-
-```
-$ docker run -d -p 80:80 --name nginx -v /tmp/nginx:/etc/nginx/conf.d -t nginx
-```
-
-Fetch the template and start the docker-gen container with the shared volume:
-```
-$ mkdir -p /tmp/templates && cd /tmp/templates
-$ curl -o nginx.tmpl https://raw.githubusercontent.com/jwilder/docker-gen/master/templates/nginx.tmpl
-$ docker run -d --name nginx-gen --volumes-from nginx \
-   -v /var/run/docker.sock:/tmp/docker.sock:ro \
-   -v /tmp/templates:/etc/docker-gen/templates \
-   -t jwilder/docker-gen -notify-sighup nginx -watch -only-exposed /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
-```
 
 ===
 
