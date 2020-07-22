@@ -1,9 +1,23 @@
 language: go
-go:
-- "1.9"
-- "1.10"
-- "1.11"
-install:
-- make get-deps
-script:
-- make all check-gofmt test
+os: linux
+dist: trusty
+go: '1.13'
+install: make get-deps
+jobs:
+- stage: Tests
+  script: make all check-gofmt test
+- stage: GitHub Release
+  if: tag IS present
+  script: make all release
+  deploy:
+    provider: releases
+    edge: true
+    cleanup: false
+    file_glob: true
+    file: docker-gen-*.tar.gz
+    token:
+      secure: BqAOJu5m0JlzW3J5YBmQ5ucltnvmdlZS8/lDQw8BkNK/Hfv1fE0jESH3M9LgMZ9ZY0/ufl3AUmRFj7eIiTx6AU6MqLUevirIuZ+K1k8hEGf3xjvfKCgm6HEZxzSEusMMKVNLh0rGahMqxtmb32+VkChw+D0Y3vvGvk0Ct2PaTjZWlVVnR34xOYgOn11J+B1K62E6gON0UBVc8tmWqU9hQPLe6lQiSPXBD0V/KoSh31FAsHin3Bjg/MYSuYPlYrS+y2hkRHttlUWpqrmUZkUwKRP2xE8GlEiph6+cVL/4InNuq1I9Y0ghaLcr1NAZk3FkGZ5ixjQIcTIuJBFxGTL//uzuinJTD0534bv53mQgEC15t3PD4hWAL987cdpc4UrFGRKwg+hbjXgkhy4scTeycBb+cx2Tfd9MgZF+5tP7Htl2dVGahxzN7jImjlL5wCGgOEx4FA7Kl/182CY73O5ew2MMQ1T07XCJPRiTphoYf8QMOZACI7Ta3jABr/zgtvGkHfyhRRH+/9AScDRK63t7s6+wtxgbu5RN/sTXBk4uSF+xtQjEy8oJEMw5PU0zsNj0zATCLYAOcW99azPN+zOCIshb84pj4RyLoYUicVzdDxJuBNk38SgU/NmO5pqnJ8rlIS5jbZQ5b2K7jjlw5IPEiXO5SeNXi3+mpJUCYocOgAM=
+    on:
+      tags: true
+      all_branches: true
+      repo: Jeremie-C/my-docker-gen

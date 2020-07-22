@@ -177,10 +177,11 @@ func GetCurrentContainerID() string {
 				return id
 			} else if id := matchECSCurrentContainerID(strLines); id != "" {
 				return id
+			} else if id := matchDockerLimitCurrentContainerID(strLines); id != "" {
+				return id
 			}
 		}
 	}
-
 	return ""
 }
 
@@ -208,5 +209,18 @@ func matchECSCurrentContainerID(lines string) string {
 		return containerID
 	}
 
+	return ""
+}
+
+func matchDockerLimitCurrentContainerID(lines string) string {
+	regex := "/docker[_-]limit.slice[/-]([[:alnum:]]{64})(\\.scope)?$"
+	re := regexp.MustCompilePOSIX(regex)
+
+	if re.MatchString(string(lines)) {
+		submatches := re.FindStringSubmatch(string(lines))
+		containerID := submatches[1]
+
+		return containerID
+	}
 	return ""
 }
